@@ -81,3 +81,28 @@ def logout():
 	session.pop('logged_in', None)
 	flash('You were logged out')
 	return redirect(url_for('show_entries'))
+
+"""From this point there are methods written by me 
+and not present in the turorial"""
+
+@app.route('/edit=<int:entry_id>', methods=['GET','POST'])
+def edit_entry(entry_id):
+	error=None
+	if request.method == 'POST':
+		db=get_db()
+		cur = db.execute('select title, text from entries where id = (?)', (entry_id,))
+		entries = cur.fetchall()
+		print(entries)
+		return render_template('edit_entry.html',id=entry_id,entries=entries)
+	return render_template('edit_entry.html',id=entry_id,entries=entries)
+
+@app.route('/edit=<int:entry_id>&edited=true', methods=['GET','POST'])
+def update_entry(entry_id):
+	if request.method == 'POST':
+		db=get_db()
+		db.execute('update entries set title = ?, text = ? where id = ?', 
+					[request.form['title'], request.form['text'], entry_id]
+				)
+		db.commit()
+		flash('Entry was successfuly edited')
+	return redirect(url_for('show_entries'))
