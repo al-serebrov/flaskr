@@ -14,6 +14,12 @@
   <ul class=entries>
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+    {% if session.logged_in %}
+    	<form action="/delete={{ entry.id }}" method="post">
+    	<input type="submit" value="Delete">
+    	</form>
+    {% endif %}
+    </li>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
