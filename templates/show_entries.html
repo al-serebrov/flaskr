@@ -15,9 +15,7 @@
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
     {% if session.logged_in %}
-    	<form action="/edit={{ entry.id }}" method="post">
-    	<input type="submit" value="Edit">
-    	</form>
+    	<a href="/edit={{ entry.id }}">Edit</a>
     {% endif %}
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
