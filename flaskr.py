@@ -107,7 +107,7 @@ def logout():
     return redirect(url_for('show_entries'))
 
 
-@app.route('/delete=<int:entry_id>', methods=['GET', 'POST'])
+@app.route('/delete=<int:entry_id>', methods=['POST'])
 def delete_entry(entry_id):
     """Delete entry from database and shows entries again."""
     db = get_db()
