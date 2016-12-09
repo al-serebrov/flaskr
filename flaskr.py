@@ -110,12 +110,9 @@ def logout():
 @app.route('/delete=<int:entry_id>', methods=['GET', 'POST'])
 def delete_entry(entry_id):
     """Delete entry from database and shows entries again."""
-    error = None
-    if request.method == 'POST':
-        db = get_db()
-        print(entry_id)
-        db.execute('delete from entries where id= (?)', (entry_id,))
-        db.commit()
-        flash('The entry was deleted')
-        return redirect(url_for('show_entries'))
-    return redirect(url_for('show_entries'), error=error)
+    db = get_db()
+    print(entry_id)
+    db.execute('delete from entries where id= (?)', (entry_id,))
+    db.commit()
+    flash('The entry was deleted')
+    return redirect(url_for('show_entries'))
