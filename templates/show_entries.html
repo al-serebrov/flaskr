@@ -15,7 +15,7 @@
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
     {% if session.logged_in %}
-    	<form action="/delete={{ entry.id }}" method="post">
+    	<form action="/delete={{ entry.id }}" method=post>
     	<input type="submit" value="Delete">
     	</form>
     {% endif %}
