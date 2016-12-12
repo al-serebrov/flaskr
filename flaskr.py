@@ -82,23 +82,24 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_entries'))
 
-@app.route('/edit=<int:entry_id>', methods=['GET'])
-def show_entry(entry_id):
+@app.route('/entry=<id>', methods=['GET'])
+def show_entry(id):
     """Show a singly entry."""
-    db=get_db()
+    db = get_db()
     cur = db.execute(
         'select title, text from entries where id = (?)', 
-        (entry_id,)
+        (id,)
     )
     entries = cur.fetchall()
-    return render_template('edit_entry.html',id=entry_id,entries=entries)
+    return render_template('edit_entry.html',id=id,entries=entries)
 
-@app.route('/edit=<int:entry_id>', methods=['POST'])
-def update_entry(entry_id):
-    db=get_db()
+@app.route('/entry=<id>', methods=['POST'])
+def update_entry(id):
+    """Update ecntry title and text"""
+    db = get_db()
     db.execute(
         'update entries set title = ?, text = ? where id = ?', 
-        [request.form['title'], request.form['text'], entry_id]
+        [request.form['title'], request.form['text'], id]
     )
     db.commit()
     flash('Entry was successfuly edited')
