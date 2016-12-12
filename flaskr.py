@@ -92,6 +92,7 @@ def move_entry(entry_id, direction):
     data = []
     for i, row in enumerate(cur):
         data.append([i, row[0]])
+    print(data)
     if fnmatch.fnmatch(direction, 'up'):
         if data[0][1] == int(entry_id):
             flash('The entry is already on the top')
@@ -113,7 +114,6 @@ def move_entry(entry_id, direction):
                                       SET id = ?
                                       WHERE id = ?''',
                                    (previous_row[1], 99999999))
-        db.commit()
     elif fnmatch.fnmatch(direction, 'down'):
         if data[-1][1] == int(entry_id):
             flash('The entry is the last one, can\'t move down')
@@ -135,5 +135,5 @@ def move_entry(entry_id, direction):
                                   SET id = ?
                                   WHERE id = ?''',
                                (previous_row[1], 99999999))
-        db.commit()
+    db.commit()
     return redirect(url_for('show_entries'))
