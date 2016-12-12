@@ -88,10 +88,10 @@ def logout():
 def move_entry(entry_id, direction):
     """Move entry up or down."""
     db = get_db()
-    cur = db.execute('select id, title, text from entries order by id desc')
+    cur = db.execute('select id from entries order by id desc')
     data = []
     for i, row in enumerate(cur):
-        data.append([i, row[0], row[1], row[2]])
+        data.append([i, row[0]])
     if fnmatch.fnmatch(direction, 'up'):
         if data[0][1] == int(entry_id):
             flash('The entry is already on the top')
