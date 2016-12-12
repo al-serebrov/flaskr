@@ -14,6 +14,8 @@
   <ul class=entries>
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+    <a href="/entry={{ entry.id }}&move=up">Up</a>
+    <a href="/entry={{ entry.id }}&move=down">Down</a>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
