@@ -111,7 +111,6 @@ def logout():
 def delete_entry(entry_id):
     """Delete entry from database and shows entries again."""
     db = get_db()
-    print(entry_id)
     db.execute('delete from entries where id= (?)', (entry_id,))
     db.commit()
     flash('The entry was deleted')
