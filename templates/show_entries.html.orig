@@ -15,12 +15,16 @@
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
     {% if session.logged_in %}
-        <a href="/entry={{ entry.id }}">Edit</a>
+<<<<<<< HEAD
     	<form action="/delete={{ entry.id }}" method=post>
     	<input type="submit" value="Delete">
     	</form>
     {% endif %}
     </li>
+=======
+    	<a href="/entry={{ entry.id }}">Edit</a>
+    {% endif %}
+>>>>>>> master
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
