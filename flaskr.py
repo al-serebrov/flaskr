@@ -48,7 +48,7 @@ def close_db(error):
 @app.route('/')
 def show_entries():
     db=get_db()
-    cur = db.execute('select id, title, text from entries order by id desc')
+    cur = db.execute('select id, title, text from entries order by sort_order desc')
     entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
@@ -58,7 +58,6 @@ def add_entry():
         abort(401)
     db = get_db()
     max_order_id = db.execute('SELECT MAX(sort_order) FROM entries').fetchone()[0]
-    print(max_order_id)
     if max_order_id is None:
         new_order_id = 10
     else:
@@ -100,52 +99,34 @@ def logout():
 def move_entry(entry_id, direction):
     """Move entry up or down."""
     db = get_db()
-    cur = db.execute('select id from entries order by id desc')
-    data = []
-    for i, row in enumerate(cur):
-        data.append([i, row[0]])
-    print(data)
+    moving_entry_so = db.execute(
+        'select sort_order from entries where id = (?)',
+        (int(entry_id),)
+    ).fetchone()[0]
     if fnmatch.fnmatch(direction, 'up'):
-        if data[0][1] == int(entry_id):
-            flash('The entry is already on the top')
-            return redirect(url_for('show_entries'))
-        else:
-            for i, row in enumerate(data):
-                if row[1] == int(entry_id):
-                        current_row = data[i]
-                        previous_row = data[i - 1]
-                        db.execute('''UPDATE entries
-                                      SET id = ?
-                                      WHERE id = ?''',
-                                   (99999999, current_row[1]))
-                        db.execute('''UPDATE entries
-                                      SET id = ?
-                                      WHERE id = ?''',
-                                   (current_row[1], previous_row[1]))
-                        db.execute('''UPDATE entries
-                                      SET id = ?
-                                      WHERE id = ?''',
-                                   (previous_row[1], 99999999))
+        another_entry_id_so = db.execute(
+            'select id, sort_order from entries where sort_order > (?) order by sort_order asc',
+            (moving_entry_so,)
+        ).fetchall()
     elif fnmatch.fnmatch(direction, 'down'):
-        if data[-1][1] == int(entry_id):
-            flash('The entry is the last one, can\'t move down')
-            return redirect(url_for('show_entries'))
-        else:
-            for i, row in enumerate(data):
-                if row[1] == int(entry_id):
-                    current_row = data[i]
-                    previous_row = data[i + 1]
-                    db.execute('''UPDATE entries
-                                  SET id = ?
-                                  WHERE id = ?''',
-                               (99999999, current_row[1]))
-                    db.execute('''UPDATE entries
-                                  SET id = ?
-                                  WHERE id = ?''',
-                               (current_row[1], previous_row[1]))
-                    db.execute('''UPDATE entries
-                                  SET id = ?
-                                  WHERE id = ?''',
-                               (previous_row[1], 99999999))
-    db.commit()
+        another_entry_id_so = db.execute(
+            'select id, sort_order from entries where sort_order < (?) order by sort_order desc',
+            (moving_entry_so,)
+        ).fetchall()
+    try:
+        temp_id = another_entry_id_so[0][0]
+        temp_so = another_entry_id_so[0][1]
+        db.execute(
+            'UPDATE entries set sort_order = ? where id = ?',
+            (moving_entry_so, temp_id)
+        )
+        db.commit()
+        db.execute(
+            'UPDATE entries set sort_order = ? where id = ?',
+            (temp_so, entry_id)
+        )
+        db.commit()
+    except IndexError:
+        flash('Unable to move entry %s' % str(direction))
+
     return redirect(url_for('show_entries'))
