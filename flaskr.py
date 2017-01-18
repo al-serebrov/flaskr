@@ -57,12 +57,18 @@ def add_entry():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
+    max_order_id = db.execute('SELECT MAX(sort_order) FROM entries').fetchone()[0]
+    print(max_order_id)
+    if max_order_id is None:
+        new_order_id = 10
+    else:
+        new_order_id = max_order_id + 10
     db.execute(
-        'insert into entries (title, text, sort_order) values (?, ?,  ( (SELECT max(sort_order) FROM entries) + 1  )  )',
+        'insert into entries (title, text, sort_order) values (?, ?, ?)',
             [
                 request.form['title'],
-                request.form['text']
-                
+                request.form['text'],
+                new_order_id
             ]
         )
     db.commit()
