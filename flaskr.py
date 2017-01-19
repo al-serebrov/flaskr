@@ -52,6 +52,7 @@ def show_entries():
     entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
+
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
@@ -64,12 +65,12 @@ def add_entry():
         new_order_id = max_order_id + 10
     db.execute(
         'insert into entries (title, text, sort_order) values (?, ?, ?)',
-            [
-                request.form['title'],
-                request.form['text'],
-                new_order_id
-            ]
-        )
+        [
+            request.form['title'],
+            request.form['text'],
+            new_order_id
+        ]
+    )
     db.commit()
     flash('New entry was successfuly posted')
     return redirect(url_for('show_entries'))
@@ -86,10 +87,12 @@ def login():
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_entries'))
-    return render_template('login.html', error=error)           
+    return render_template('login.html', error=error)
+
 
 @app.route('/logout')
 def logout():
+    """Log user out."""
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
@@ -105,17 +108,17 @@ def move_entry(entry_id, direction):
     ).fetchone()[0]
     if fnmatch.fnmatch(direction, 'up'):
         another_entry_id_so = db.execute(
-            'select id, sort_order from entries where sort_order > (?) order by sort_order asc',
+            'select id, min(sort_order) from entries where sort_order > (?)',
             (moving_entry_so,)
-        ).fetchall()
+        ).fetchone()
     elif fnmatch.fnmatch(direction, 'down'):
         another_entry_id_so = db.execute(
-            'select id, sort_order from entries where sort_order < (?) order by sort_order desc',
+            'select id, max(sort_order) from entries where sort_order < (?)',
             (moving_entry_so,)
-        ).fetchall()
+        ).fetchone()
     try:
-        temp_id = another_entry_id_so[0][0]
-        temp_so = another_entry_id_so[0][1]
+        temp_id = another_entry_id_so[0]
+        temp_so = another_entry_id_so[1]
         db.execute(
             'UPDATE entries set sort_order = ? where id = ?',
             (moving_entry_so, temp_id)
@@ -126,7 +129,7 @@ def move_entry(entry_id, direction):
             (temp_so, entry_id)
         )
         db.commit()
-    except IndexError:
+    except (IndexError, sqlite3.IntegrityError):
         flash('Unable to move entry %s' % str(direction))
 
     return redirect(url_for('show_entries'))
