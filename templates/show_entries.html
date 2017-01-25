@@ -14,8 +14,12 @@
   <ul class=entries>
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
-    <a class ="move_entry" href="/entry={{ entry.id }}&move=up">Up</a>
-    <a class = "move_entry" href="/entry={{ entry.id }}&move=down">Down</a>
+    <form action="/entry={{ entry.id }}&move=up" method=post>
+      <input type="submit" value="Up">
+    </form>
+    <form action="/entry={{ entry.id }}&move=down" method=post>
+      <input type="submit" value="Down">
+    </form>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}

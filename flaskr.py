@@ -98,7 +98,7 @@ def logout():
     return redirect(url_for('show_entries'))
 
 
-@app.route('/entry=<entry_id>&move=<direction>', methods=['GET'])
+@app.route('/entry=<entry_id>&move=<direction>', methods=['POST'])
 def move_entry(entry_id, direction):
     """Move entry up or down."""
     db = get_db()
@@ -117,7 +117,7 @@ def move_entry(entry_id, direction):
         another_entry_id_so = db.execute(
             '''select id, sort_order from entries
             where sort_order < (?)
-            order by sort_orderd desc limit 1''',
+            order by sort_order desc limit 1''',
             (moving_entry_so,)
         ).fetchone()
     try:
@@ -133,7 +133,7 @@ def move_entry(entry_id, direction):
             (temp_so, entry_id)
         )
         db.commit()
-    except (IndexError, sqlite3.IntegrityError):
+    except (IndexError, TypeError, sqlite3.IntegrityError):
         flash('Unable to move entry %s' % str(direction))
 
     return redirect(url_for('show_entries'))
