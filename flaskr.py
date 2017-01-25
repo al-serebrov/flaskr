@@ -108,12 +108,16 @@ def move_entry(entry_id, direction):
     ).fetchone()[0]
     if fnmatch.fnmatch(direction, 'up'):
         another_entry_id_so = db.execute(
-            'select id, min(sort_order) from entries where sort_order > (?)',
+            '''select id, sort_order from entries
+            where sort_order > (?)
+            order by sort_order asc limit 1''',
             (moving_entry_so,)
         ).fetchone()
     elif fnmatch.fnmatch(direction, 'down'):
         another_entry_id_so = db.execute(
-            'select id, max(sort_order) from entries where sort_order < (?)',
+            '''select id, sort_order from entries
+            where sort_order < (?)
+            order by sort_orderd desc limit 1''',
             (moving_entry_so,)
         ).fetchone()
     try:
