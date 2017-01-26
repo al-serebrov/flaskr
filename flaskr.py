@@ -15,10 +15,10 @@ app.config.from_object(__name__)
 
 # Load default config and override config from an environment varible
 app.config.update(dict(
-    DATABASE = os.path.join(app.root_path, 'flaskr.db'),
-    SECRET_KEY = 'development key',
-    USERNAME = 'admin',
-    PASSWORD = 'default'
+    DATABASE=os.path.join(app.root_path, 'flaskr.db'),
+    SECRET_KEY='development key',
+    USERNAME='admin',
+    PASSWORD='default'
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
@@ -31,8 +31,11 @@ def connect_db():
 
 
 def get_db():
-    """Open a new database connection if there is non yet for
-    the current application context."""
+    """Get database.
+
+    Open a new database connection if there is non yet for
+    the current application context.
+    """
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
@@ -64,7 +67,8 @@ def close_db(error):
 def show_entries():
     """Show all entries."""
     db = get_db()
-    cur = db.execute('select id, title, text from entries order by sort_order desc')
+    cur = db.execute('''SELECT id, title, text
+                     FROM entries ORDER BY sort_order desc''')
     entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
@@ -75,7 +79,8 @@ def add_entry():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
-    max_order_id = db.execute('SELECT MAX(sort_order) FROM entries').fetchone()[0]
+    max_order_id = db.execute('''SELECT MAX(sort_order)
+                              FROM entries''').fetchone()[0]
     if max_order_id is None:
         new_order_id = 1
     else:
@@ -126,29 +131,36 @@ def delete_entry(entry_id):
     flash('The entry was deleted')
     return redirect(url_for('show_entries'))
 
+
 @app.route('/entry=<id>', methods=['GET'])
 def show_entry(id):
     """Show a singly entry."""
     db = get_db()
     cur = db.execute(
-        'select title, text from entries where id = (?)', 
+        'select title, text from entries where id = (?)',
         (id,)
     )
     entries = cur.fetchall()
-    return render_template('edit_entry.html',id=id,entries=entries)
-    
+    return render_template('edit_entry.html', id=id, entries=entries)
+
+
 @app.route('/entry=<id>', methods=['POST'])
 def update_entry(id):
-    """Update ecntry title and text"""
+    """Update ecntry title and text."""
     db = get_db()
     db.execute(
-        'update entries set title = ?, text = ? where id = ?', 
+        'update entries set title = ?, text = ? where id = ?',
         [request.form['title'], request.form['text'], id]
     )
     db.commit()
     flash('Entry was successfuly edited')
     return redirect(url_for('show_entries'))
 
+
+@app.route('/entry=<entry_id>&move=<direction>', methods=['POST'])
+def move_entry(entry_id, direction):
+    """Move entry up or down."""
+    db = get_db()
     moving_entry_so = db.execute(
         'select sort_order from entries where id = (?)',
         (int(entry_id),)
