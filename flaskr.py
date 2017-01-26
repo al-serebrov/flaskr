@@ -6,6 +6,7 @@ Created just for training purposes.
 
 import os
 import sqlite3
+import fnmatch
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
 
@@ -63,7 +64,7 @@ def close_db(error):
 def show_entries():
     """Show all entries."""
     db = get_db()
-    cur = db.execute('select id, title, text from entries order by id desc')
+    cur = db.execute('select id, title, text from entries order by sort_order desc')
     entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries)
 
@@ -74,9 +75,18 @@ def add_entry():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
+    max_order_id = db.execute('SELECT MAX(sort_order) FROM entries').fetchone()[0]
+    if max_order_id is None:
+        new_order_id = 1
+    else:
+        new_order_id = max_order_id + 1
     db.execute(
-        'insert into entries (title, text) values (?, ?)',
-        [request.form['title'], request.form['text']]
+        'insert into entries (title, text, sort_order) values (?, ?, ?)',
+        [
+            request.form['title'],
+            request.form['text'],
+            new_order_id
+        ]
     )
     db.commit()
     flash('New entry was successfuly posted')
@@ -137,4 +147,42 @@ def update_entry(id):
     )
     db.commit()
     flash('Entry was successfuly edited')
+    return redirect(url_for('show_entries'))
+
+    moving_entry_so = db.execute(
+        'select sort_order from entries where id = (?)',
+        (int(entry_id),)
+    ).fetchone()[0]
+    if fnmatch.fnmatch(direction, 'up'):
+        another_entry_id_so = db.execute(
+            '''select id, sort_order from entries
+            where sort_order > (?)
+            order by sort_order asc limit 1''',
+            (moving_entry_so,)
+        ).fetchone()
+    elif fnmatch.fnmatch(direction, 'down'):
+        another_entry_id_so = db.execute(
+            '''select id, sort_order from entries
+            where sort_order < (?)
+            order by sort_order desc limit 1''',
+            (moving_entry_so,)
+        ).fetchone()
+    if another_entry_id_so is not None:
+        temp_id = another_entry_id_so[0]
+        temp_so = another_entry_id_so[1]
+        db.execute(
+            'UPDATE entries set sort_order = ? where id = ?',
+            (moving_entry_so, temp_id)
+        )
+        db.execute(
+            'UPDATE entries set sort_order = ? where id = ?',
+            (temp_so, entry_id)
+        )
+        db.commit()
+    else:
+        """Appears when there's no entry with with bigger or smaller order id
+        in other words, if we trying to move up the topmost entry or move down
+        the very last entry"""
+        flash('Unable to move entry %s' % str(direction))
+
     return redirect(url_for('show_entries'))

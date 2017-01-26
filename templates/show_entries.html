@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block  body %}
-	{% if session.logged_in %}
+  {% if session.logged_in %}
 	<form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
         <dt>Title:
@@ -16,9 +16,15 @@
     <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
     {% if session.logged_in %}
         <a href="/entry={{ entry.id }}">Edit</a>
-    	<form action="/delete={{ entry.id }}" method=post>
-    	<input type="submit" value="Delete">
-    	</form>
+        <form action="/delete={{ entry.id }}" method=post>
+            <input type="submit" value="Delete">
+        </form>
+        <form action="/entry={{ entry.id }}&move=up" method=post>
+          <input type="submit" value="Up">
+        </form>
+        <form action="/entry={{ entry.id }}&move=down" method=post>
+          <input type="submit" value="Down">
+        </form>
     {% endif %}
     </li>
   {% else %}
