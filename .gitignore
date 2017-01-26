@@ -1,2 +1,6 @@
-*.orig
-*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# The database
+flaskr.db

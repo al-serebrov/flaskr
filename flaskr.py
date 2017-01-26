@@ -60,9 +60,9 @@ def add_entry():
     db = get_db()
     max_order_id = db.execute('SELECT MAX(sort_order) FROM entries').fetchone()[0]
     if max_order_id is None:
-        new_order_id = 10
+        new_order_id = 1
     else:
-        new_order_id = max_order_id + 10
+        new_order_id = max_order_id + 1
     db.execute(
         'insert into entries (title, text, sort_order) values (?, ?, ?)',
         [
@@ -120,20 +120,22 @@ def move_entry(entry_id, direction):
             order by sort_order desc limit 1''',
             (moving_entry_so,)
         ).fetchone()
-    try:
+    if another_entry_id_so is not None:
         temp_id = another_entry_id_so[0]
         temp_so = another_entry_id_so[1]
         db.execute(
             'UPDATE entries set sort_order = ? where id = ?',
             (moving_entry_so, temp_id)
         )
-        db.commit()
         db.execute(
             'UPDATE entries set sort_order = ? where id = ?',
             (temp_so, entry_id)
         )
         db.commit()
-    except (IndexError, TypeError, sqlite3.IntegrityError):
+    else:
+        """Appears when there's no entry with with bigger or smaller order id
+        in other words, if we trying to move up the topmost entry or move down
+        the very last entry"""
         flash('Unable to move entry %s' % str(direction))
 
     return redirect(url_for('show_entries'))
