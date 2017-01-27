@@ -18,16 +18,16 @@
     <br>
         <div class=buttons>
           <form action="/entry={{ entry.id }}" method=get>
-              <input type="submit" value="Edit">
+              <input type="button" value="Edit">
           </form>
           <form action="/delete={{ entry.id }}" method=post>
-              <input type="submit" value="Delete">
+              <input type="button" value="Delete">
           </form>
           <form action="/entry={{ entry.id }}&move=up" method=post>
-            <input type="submit" value="Up">
+            <input type="button" value="Up">
           </form>
           <form action="/entry={{ entry.id }}&move=down" method=post>
-            <input type="submit" value="Down">
+            <input type="button" value="Down">
           </form>
         </div>
     {% endif %}
