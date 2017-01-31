@@ -29,10 +29,13 @@ div {
 	background: #eee
 }
 
-input[type="button"], input[type="button"]:focus, input[type="button"]:active {
+input[type="submit"], input[type="submit"]:focus, input[type="submit"]:active {
     /* Remove all decorations to look like normal text */
-    background: none;
-    border: none;
+    height: 25px;
+    width: 70px;
+    background-color: #07889B;
+    border-radius: 5px;
+    opacity: 0.5;
     display: inline;
     font: inherit;
     margin: 0;
@@ -40,13 +43,12 @@ input[type="button"], input[type="button"]:focus, input[type="button"]:active {
     outline: none;
     outline-offset: 0;
     /* Additional styles to look like a link */
-    color: blue;
+    color: white;
     cursor: pointer;
-    text-decoration: underline;
 }
 
 /* Remove extra space inside buttons in Firefox */
-input[type="button"]::-moz-focus-inner {
+input[type="submit"]::-moz-focus-inner {
     border: none;
     padding: 0;
 }
@@ -102,7 +104,7 @@ input[type="button"]::-moz-focus-inner {
 .buttons {
 	background: none;
 	position: relative;
-	left: 375px;
+	left: 225px;
 	padding: 2px;
 	width: 80px;
 	display: inline

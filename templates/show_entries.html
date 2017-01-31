@@ -4,7 +4,7 @@
 	<form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
         <dt>Title:
-        <dd><input type=text size=30 name=title>
+        <dd><input type=text size=38 name=title>
         <dt>Text:
         <dd><textarea name=text rows=5 cols=40></textarea>
         <dd><input type=submit value=Share>
@@ -18,16 +18,16 @@
     <br>
         <div class=buttons>
           <form action="/entry={{ entry.id }}" method=get>
-              <input type="button" value="Edit">
+              <input type="submit" value="Edit">
           </form>
           <form action="/delete={{ entry.id }}" method=post>
-              <input type="button" value="Delete">
+              <input type="submit" value="Delete">
           </form>
           <form action="/entry={{ entry.id }}&move=up" method=post>
-            <input type="button" value="Up">
+            <input type="submit" value="Up">
           </form>
           <form action="/entry={{ entry.id }}&move=down" method=post>
-            <input type="button" value="Down">
+            <input type="submit" value="Down">
           </form>
         </div>
     {% endif %}
