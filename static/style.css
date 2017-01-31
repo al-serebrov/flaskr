@@ -33,6 +33,10 @@ input[type="text"] {
 	width: 100%;
 }
 
+textarea {
+	width: 100%;
+}
+
 input[type="submit"], input[type="submit"]:focus, input[type="submit"]:active {
     /* Remove all decorations to look like normal text */
     height: 25px;
