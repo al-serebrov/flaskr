@@ -1,40 +1,45 @@
 body { 
-	font-family: sans-serif;
-	background: #eee;
+    font-family: sans-serif;
+    background: #eee;
+    height: 100%;
 }
 
 a, h1, h2 {
-	color: #377ba8;
+    color: #377ba8;
 }
 
 h1, h2 {
-	font-family: 'Georgia', serif;
-	margin: 0;
+    font-family: 'Georgia', serif;
+    margin: 0;
 }
 
 h1 {
-	border-bottom: 2px solid #eee;
+    border-bottom: 2px solid #eee;
 }
 
 h2 {
-	font-size: 1.2em;
+    font-size: 1.2em;
 }
 
 form {
-	display: inline;
+    display: inline;
+}
+
+dl {
+    display:block;
 }
 
 div {
-	font-family: sans-serif;
-	background: #eee
+    font-family: sans-serif;
+    background: #eee
 }
 
 input[type="text"] {
-	width: 100%;
+    width: 100%;
 }
 
 textarea {
-	width: 100%;
+    width: 100%;
 }
 
 input[type="submit"], input[type="submit"]:focus, input[type="submit"]:active {
@@ -62,58 +67,67 @@ input[type="submit"]::-moz-focus-inner {
 }
 
 .page {
-	margin: 2em auto;
-	width: 35em;
-	border: 5px solid #ccc;
-	padding: 0.8em;
-	background: white;
+    margin: 2em auto;
+    width: 35em;
+    border: 5px solid #ccc;
+    padding: 0.8em;
+    background: white;
 }
 
 .entries {
-	list-style: none;
-	margin: 0;
-	padding: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .entries li {
-	margin: 0.8em 1.2em;
+    margin: 0.8em 1.2em;
 }
 
 .entries li h2 {
-	margin-left: -1em; 
+    margin-left: -1em; 
 }
 
 .add-entry {
-	font-size: 0.9em;
-	border-bottom: 1px solid #ccc;
+    font-size: 0.9em;
+    border-bottom: 1px solid #ccc;
 }
 
 .add-entry dl {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .metanav {
-	text-align: right;
-	font-size: 0.8em;
-	padding: 0.3em;
-	margin-bottom: 1em; background: #fafafa;
+    text-align: right;
+    font-size: 0.8em;
+    padding: 0.3em;
+    margin-bottom: 1em; background: #fafafa;
+}
+
+.flashcontainer {
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    
+    height: 100 px;
 }
 
 .flash {
-	background: #cee5F5; padding: 0.5em;
+    background: #cee5F5; padding: 0.5em;
     border: 1px solid #aacbe2;
+    display: none;
 }
 
 .error {
-	background: #f0d6d6;
-	padding: 0.5em;
+    background: #f0d6d6;
+    padding: 0.5em;
 }
 
 .buttons {
-	background: none;
-	position: relative;
-	left: 225px;
-	padding: 2px;
-	width: 80px;
-	display: inline
+    background: none;
+    position: relative;
+    left: 225px;
+    padding: 2px;
+    width: 80px;
+    display: inline
 }
