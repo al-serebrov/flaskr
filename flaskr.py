@@ -63,6 +63,24 @@ def close_db(error):
         g.sqlite_db.close()
 
 
+@app.context_processor
+def override_url_for():
+    """Override url_for method."""
+    return dict(url_for=dated_url_for)
+
+
+def dated_url_for(endpoint, **values):
+    """Add modified datetime to the static url."""
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        print(filename)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
+
+
 @app.route('/')
 def show_entries():
     """Show all entries."""

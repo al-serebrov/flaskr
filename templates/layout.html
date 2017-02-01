@@ -1,6 +1,10 @@
-<!doctupe html>
-<title>Flaskr</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}?=q=1280549780">
+<!doctype html>
+<head>
+	<title>Flaskr</title>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}?=q=1280549780">
+	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}?=q=1280549780"></script>
+</head>
 <div class=page>
 	<h1>Flaskr</h1>
 	<div class=metanav>
@@ -10,8 +14,11 @@
 			<a href="{{ url_for('logout') }}">log out</a>
 		{% endif %}
 	</div>
+	{% block body %}{% endblock %}
+</div>
+
+<div class=flashcontainer>
 	{% for message in get_flashed_messages() %}
 		<div class=flash>{{ message }}</div>
 	{% endfor %}
-	{% block body %}{% endblock %}
 </div>
