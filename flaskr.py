@@ -209,6 +209,7 @@ def move_entry(entry_id, direction):
             (temp_so, entry_id)
         )
         db.commit()
+        flash('Entry is successfuly moved %s' % str(direction))
     else:
         """Appears when there's no entry with with bigger or smaller order id
         in other words, if we trying to move up the topmost entry or move down

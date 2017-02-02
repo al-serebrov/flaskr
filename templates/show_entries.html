@@ -13,7 +13,7 @@
   {% endif %}
   <ul class=entries>
   {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+    <li id='{{ entry.id }}'><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
     {% if session.logged_in %}
     <br>
         <div class=buttons>

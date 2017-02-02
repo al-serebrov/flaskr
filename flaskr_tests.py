@@ -7,6 +7,7 @@ import os
 import flaskr
 import unittest
 import tempfile
+import fnmatch
 
 
 class FlaskrTestCase(unittest.TestCase):
@@ -99,6 +100,39 @@ class FlaskrTestCase(unittest.TestCase):
         rv = self.app.post('delete=1', follow_redirects=True)
         assert b'Hey' not in rv.data
         assert b'The entry was deleted' in rv.data
+
+    def test_move(self):
+        """Test entry move."""
+        self.login('admin', 'default')
+        # post the first entry
+        self.app.post(
+            'add',
+            data=dict(title='First one',
+                      text='text1'),
+            follow_redirects=True)
+        # post the second entry
+        self.app.post(
+            'add',
+            data=dict(title='Second one',
+                      text='text2'),
+            follow_redirects=True)
+        # trying  to  move the last (by sort order) entry down
+        rv = self.app.post('entry=1&move=down', follow_redirects=True)
+        assert b'Unable to' in rv.data
+        assert b'Successfuly' not in rv.data
+        # moving the first (by sort order) entry down
+        rv = self.app.post('entry=2&move=down', follow_redirects=True)
+        assert b'Unable to' not in rv.data
+        assert b'successfuly' in rv.data
+        # testing if the entries have been moved
+        """print(rv.data)
+        is_correct_order = False
+        if fnmatch.fnmatch('rv.data', '.<li id=\'1\'>.*<li id=\'2\'>.'):
+            is_correct_order = True
+        print(is_correct_order)
+        
+        in process
+        """
 
 if __name__ == '__main__':
     # import pdb; pdb.set_trace()
