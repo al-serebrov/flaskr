@@ -7,7 +7,7 @@ import os
 import flaskr
 import unittest
 import tempfile
-import fnmatch
+from bs4 import BeautifulSoup
 
 
 class FlaskrTestCase(unittest.TestCase):
@@ -125,15 +125,14 @@ class FlaskrTestCase(unittest.TestCase):
         assert b'Unable to' not in rv.data
         assert b'successfuly' in rv.data
         # testing if the entries have been moved
-        """print(rv.data)
-        is_correct_order = False
-        if fnmatch.fnmatch('rv.data', '.<li id=\'1\'>.*<li id=\'2\'>.'):
-            is_correct_order = True
-        print(is_correct_order)
-        
-        in process
-        """
+        soup = BeautifulSoup(rv.data, 'html.parser')
+        result = soup.find_all('li')
+        id_order = []
+        for item in result:
+            id_order.append(str(item.get('id')))
+        assert '1' in id_order[0]
+        assert '2' in id_order[1]
+
 
 if __name__ == '__main__':
-    # import pdb; pdb.set_trace()
     unittest.main()

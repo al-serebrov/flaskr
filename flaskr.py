@@ -73,7 +73,7 @@ def dated_url_for(endpoint, **values):
     """Add modified datetime to the static url."""
     if endpoint == 'static':
         filename = values.get('filename', None)
-        print(filename)
+        # print(filename)
         if filename:
             file_path = os.path.join(app.root_path,
                                      endpoint, filename)
