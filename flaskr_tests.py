@@ -10,8 +10,8 @@ import tempfile
 from bs4 import BeautifulSoup
 
 
-class FlaskrTestCase(unittest.TestCase):
-    """Test class."""
+class DBTestCase(unittest.TestCase):
+    """DB test class."""
 
     def setUp(self):
         """Set the app up."""
@@ -44,18 +44,36 @@ class FlaskrTestCase(unittest.TestCase):
         """Log the admin user out."""
         return self.app.get('logout', follow_redirects=True)
 
-    def test_login_logout(self):
-        """Login/logout test."""
+
+class FlaskrTestCase(DBTestCase):
+    """Main application test class."""
+
+    def setUp(self):
+        """Set the app up, using the DBTestCase setUp."""
+        DBTestCase.setUp(self)
+
+    def tearDown(self):
+        """Tear the app down."""
+        DBTestCase.tearDown(self)
+
+    def test_login(self):
+        """It is possible to login with correct credentials."""
         # with correct credentials
         rv = self.login('admin', 'default')
         assert b'You were logged in' in rv.data
-        # logout
+
+    def test_logout(self):
+        """It is possible to log out."""
         rv = self.logout()
         assert b'You were logged out' in rv.data
-        # with incorrect login
+
+    def test_login_incorrect_user(self):
+        """It is impossible to login with incorrect username."""
         rv = self.login('adminx', 'default')
         assert b'Invalid username' in rv.data
-        # with invalid password
+
+    def test_login_incorrect_pass(self):
+        """It is impossible to login with incorrect pass."""
         rv = self.login('admin', 'defaultx')
         assert b'Invalid password' in rv.data
 
@@ -70,36 +88,6 @@ class FlaskrTestCase(unittest.TestCase):
         assert b'No entries here so far' not in rv.data
         assert b'&lt;Hello&gt;' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
-
-    def test_edit(self):
-        """Test entry edit."""
-        self.login('admin', 'default')
-        self.app.post(
-            '/add',
-            data=dict(title='Hello',
-                      text='HTML allowed here'),
-            follow_redirects=True)
-        self.app.get('/entry=1', follow_redirects=True)
-        rv = self.app.post(
-            '/entry=1',
-            data=dict(title='Bye',
-                      text='Nothing is allowed here'),
-            follow_redirects=True)
-        assert b'HTML' not in rv.data
-        assert b'Entry was successfuly edited' in rv.data
-        assert b'Bye' in rv.data
-
-    def test_delete(self):
-        """Test entry delete."""
-        self.login('admin', 'default')
-        self.app.post(
-            'add',
-            data=dict(title='Hey',
-                      text='World'),
-            follow_redirects=True)
-        rv = self.app.post('delete=1', follow_redirects=True)
-        assert b'Hey' not in rv.data
-        assert b'The entry was deleted' in rv.data
 
     def test_move(self):
         """Test entry move."""
@@ -132,6 +120,52 @@ class FlaskrTestCase(unittest.TestCase):
             id_order.append(str(item.get('id')))
         assert '1' in id_order[0]
         assert '2' in id_order[1]
+
+
+class DeleteEditTestCase(DBTestCase):
+    """Tests for delete and edit entry."""
+
+    def setUp(self):
+        """Set the app up using DBTestCase setUp, and add an entry."""
+        DBTestCase.setUp(self)
+        self.login('admin', 'default')
+        self.app.post(
+            '/add',
+            data=dict(title='Hello',
+                      text='HTML allowed here'),
+            follow_redirects=True)
+
+    def tearDown(self):
+        """Tear the app down."""
+        DBTestCase.tearDown(self)
+
+    def test_empty_db(self):
+        """
+        The database is not empty.
+
+        The db is not empty here, because we added an
+        entry and need to test if it's added indeed.
+        """
+        rv = self.app.get('/')
+        assert b'Hello' in rv.data
+
+    def test_edit(self):
+        """Test entry edit."""
+        self.app.get('/entry=1', follow_redirects=True)
+        rv = self.app.post(
+            '/entry=1',
+            data=dict(title='Bye',
+                      text='Nothing is allowed here'),
+            follow_redirects=True)
+        assert b'HTML' not in rv.data
+        assert b'Entry was successfuly edited' in rv.data
+        assert b'Bye' in rv.data
+
+    def test_delete(self):
+        """Test entry delete."""
+        rv = self.app.post('delete=1', follow_redirects=True)
+        assert b'Hello' not in rv.data
+        assert b'The entry was deleted' in rv.data
 
 
 if __name__ == '__main__':
