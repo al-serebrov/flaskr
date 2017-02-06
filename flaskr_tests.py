@@ -121,6 +121,25 @@ class FlaskrTestCase(DBTestCase):
         assert '1' in id_order[0]
         assert '2' in id_order[1]
 
+    def test_unittest_move_entry(self):
+        """Test entries are moved in the database."""
+        with flaskr.app.app_context():
+            flaskr.init_db()
+            db = flaskr.get_db()
+            self.test_move()
+            first_entry_id = db.execute(
+                '''SELECT id
+                FROM entries
+                WHERE sort_order = 1'''
+            ).fetchone()
+            second_enrty_id = db.execute(
+                '''SELECT id
+                from entries
+                WHERE sort_order = 2'''
+            ).fetchone()
+            assert first_entry_id[0] == 2
+            assert second_enrty_id[0] == 1
+
 
 class DeleteEditTestCase(DBTestCase):
     """Tests for delete and edit entry."""
